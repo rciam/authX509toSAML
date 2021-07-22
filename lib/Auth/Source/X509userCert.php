@@ -100,6 +100,11 @@ class sspmod_authX509toSAML_Auth_Source_X509userCert extends SimpleSAML_Auth_Sou
         } else {
             $assertion_dn_attribute = $this->config['authX509toSAML:assertion_dn_attribute'];
         }
+        if (!array_key_exists('authX509toSAML:assertion_issuer_dn_attribute', $this->config)){
+            $assertion_issuer_dn_attribute = 'voPersonCertificateIssuerDN';
+        } else {
+            $assertion_issuer_dn_attribute = $this->config['authX509toSAML:assertion_issuer_dn_attribute'];
+        }
         if (!array_key_exists('authX509toSAML:assertion_o_attribute', $this->config)){
             $assertion_o_attribute = 'o';
         } elseif (!empty($this->config['authX509toSAML:assertion_o_attribute']) && is_string($this->config['authX509toSAML:assertion_o_attribute'])){
@@ -132,7 +137,11 @@ class sspmod_authX509toSAML_Auth_Source_X509userCert extends SimpleSAML_Auth_Sou
             $state['UserID'] = $client_cert_data['name'];
         }
 
+        SimpleSAML_Logger::debug('X509userCert subject: ' . var_export($client_cert_data['subject'], true));
         if (array_key_exists($cert_name_attribute, $client_cert_data['subject'])){
+            if (is_array($client_cert_data['subject'][$cert_name_attribute])) {
+                $client_cert_data['subject'][$cert_name_attribute] = end($client_cert_data['subject'][$cert_name_attribute]);
+            }
             if ($export_eppn){
                 $name_tokens = explode(" ", $client_cert_data['subject'][$cert_name_attribute]);
                 $eppn = '';
@@ -147,6 +156,26 @@ class sspmod_authX509toSAML_Auth_Source_X509userCert extends SimpleSAML_Auth_Sou
                 $attributes[$assertion_name_attribute] = array(str_replace($eppn,'',$client_cert_data['subject'][$cert_name_attribute]));
             } else {
                 $attributes[$assertion_name_attribute] = array($client_cert_data['subject'][$cert_name_attribute]);
+            }
+        }
+        // Attempt to extract issuer DN information
+        if (!empty($client_cert_data['issuer'])) {
+            if (is_array($client_cert_data['issuer'])) {
+                $issuer_dn = '';
+                foreach ($client_cert_data['issuer'] as $key => $value) {
+                    if (is_array($value)) {
+                        $issuer_dn .= '/' . $key . '=' . implode("/$key=", $value);
+                    } else {
+                        $issuer_dn .= '/' . $key . '=' . $value;
+                    }
+                }
+                //$flattened = $issuer;
+                //array_walk($flattened, function(&$value, $key) {
+                //    $value = "/$key=$value";
+                //});
+                $attributes[$assertion_issuer_dn_attribute] = array($issuer_dn);
+            } elseif (is_string($client_cert_data['issuer'])) {
+                $attributes[$assertion_issuer_dn_attribute] = array($client_cert_data['issuer']);
             }
         }
         // Attempt to parse Subject Alternate Names for email addresses
