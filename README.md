@@ -126,5 +126,13 @@ IGTF Classic (`1.2.840.113612.5.2.2.1`) or MICS (`1.2.840.113612.5.2.2.5`) in
 their policies (assuming the authX509toSAML module has been configured to map
 certificate policies to the eduPersonAssurance attribute).
 
+## Compatibility matrix
+
+This table matches the module version with the supported SimpleSAMLphp version.
+
+| Module   |  SimpleSAMLphp |
+|:--------:|:--------------:|
+| v1.x     | v1.14          |
+
 ## License
 Licensed under the Apache 2.0 license, for details see `LICENSE`.
