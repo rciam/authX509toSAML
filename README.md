@@ -125,3 +125,6 @@ The configuration above only allows access to certificates including either
 IGTF Classic (`1.2.840.113612.5.2.2.1`) or MICS (`1.2.840.113612.5.2.2.5`) in
 their policies (assuming the authX509toSAML module has been configured to map
 certificate policies to the eduPersonAssurance attribute).
+
+## License
+Licensed under the Apache 2.0 license, for details see `LICENSE`.
