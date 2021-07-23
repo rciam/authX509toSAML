@@ -94,7 +94,7 @@ class X509userCert extends Source
             return;
         }
 
-        $attributes = array();
+        $attributes = [];
         /**
          * Load values from configuration or fallback to defaults
          *
@@ -150,7 +150,7 @@ class X509userCert extends Source
 
         // Get the subject of the certificate
         if (array_key_exists('name', $client_cert_data)) {
-            $attributes[$assertion_dn_attribute] = array($client_cert_data['name']);
+            $attributes[$assertion_dn_attribute] = [$client_cert_data['name']];
             $state['UserID'] = $client_cert_data['name'];
         }
 
@@ -164,17 +164,17 @@ class X509userCert extends Source
                 $eppn = '';
                 foreach ($name_tokens as $token) {
                     if (strpos($token, '@') !== false) {
-                        $attributes['eduPersonPrincipalName'] = array($token);
+                        $attributes['eduPersonPrincipalName'] = [$token];
                         $eppn = $token;
                         break;
                     }
                 }
                 // Now remove the eppn from the $assertion_name_attribute
-                $attributes[$assertion_name_attribute] = array(
+                $attributes[$assertion_name_attribute] = [
                     str_replace($eppn, '', $client_cert_data['subject'][$cert_name_attribute])
-                );
+                ];
             } else {
-                $attributes[$assertion_name_attribute] = array($client_cert_data['subject'][$cert_name_attribute]);
+                $attributes[$assertion_name_attribute] = [$client_cert_data['subject'][$cert_name_attribute]];
             }
         }
         // Attempt to extract issuer DN information
@@ -192,14 +192,14 @@ class X509userCert extends Source
                 // array_walk($flattened, function(&$value, $key) {
                 //     $value = "/$key=$value";
                 // });
-                $attributes[$assertion_issuer_dn_attribute] = array($issuer_dn);
+                $attributes[$assertion_issuer_dn_attribute] = [$issuer_dn];
             } elseif (is_string($client_cert_data['issuer'])) {
-                $attributes[$assertion_issuer_dn_attribute] = array($client_cert_data['issuer']);
+                $attributes[$assertion_issuer_dn_attribute] = [$client_cert_data['issuer']];
             }
         }
         // Attempt to parse Subject Alternate Names for email addresses
         if ($parse_san_emails) {
-            $attributes['mail'] = array();
+            $attributes['mail'] = [];
             if (array_key_exists('subjectAltName', $client_cert_data['extensions'])) {
                 if (
                     is_string($client_cert_data['extensions']['subjectAltName'])
@@ -221,7 +221,7 @@ class X509userCert extends Source
             && !empty($client_cert_data['subject']['O'])
             && is_string($client_cert_data['subject']['O'])
         ) {
-            $attributes[$assertion_o_attribute] = array($client_cert_data['subject']['O']);
+            $attributes[$assertion_o_attribute] = [$client_cert_data['subject']['O']];
         }
         // Attempt to parse certificatePolicies extensions
         if ($parse_policy) {
@@ -229,7 +229,7 @@ class X509userCert extends Source
                 !empty($client_cert_data['extensions']['certificatePolicies'])
                 && is_string($client_cert_data['extensions']['certificatePolicies'])
             ) {
-                $attributes[$assertion_assurance_attribute] = array();
+                $attributes[$assertion_assurance_attribute] = [];
                 if (
                     preg_match_all(
                         '/Policy: ([\d\.\d]+)/',
