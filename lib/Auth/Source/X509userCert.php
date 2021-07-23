@@ -1,12 +1,14 @@
 <?php
 
+namespace SimpleSAML\Module\authX509toSAML\Auth\Process;
+
 /**
  * This class implements x509 certificate authentication in essence 
  * translating the x509 certificate to a SAML Assertion
  *
  * @author Ioannis Kakavas <ikakavas@noc.grnet.gr>
  */
-class sspmod_authX509toSAML_Auth_Source_X509userCert extends SimpleSAML_Auth_Source {
+class X509userCert extends \SimpleSAML\Auth\Source {
 
     private $config;
     /**
@@ -34,9 +36,9 @@ class sspmod_authX509toSAML_Auth_Source_X509userCert extends SimpleSAML_Auth_Sou
      * @param array &$state  Information about the current authentication.
      */
     public function authFailed(&$state) {
-        $config = SimpleSAML_Configuration::getInstance();
+        $config = SimpleSAML\Configuration::getInstance();
 
-        $t = new SimpleSAML_XHTML_Template($config,
+        $t = new SimpleSAML\XHTML\Template($config,
             'authX509toSAML:X509error.php');
         $t->data['errorcode'] = $state['authX509toSAML.error'];
 
@@ -72,7 +74,7 @@ class sspmod_authX509toSAML_Auth_Source_X509userCert extends SimpleSAML_Auth_Sou
         $client_cert = $_SERVER['SSL_CLIENT_CERT'];
         $client_cert_data = openssl_x509_parse($client_cert);
         if ($client_cert_data == FALSE) {
-            SimpleSAML_Logger::error('authX509toSAML: invalid cert');
+            SimpleSAML\Logger::error('authX509toSAML: invalid cert');
             $state['authX509toSAML.error'] = "INVALIDCERT";
             $this->authFailed($state);
 
@@ -137,7 +139,7 @@ class sspmod_authX509toSAML_Auth_Source_X509userCert extends SimpleSAML_Auth_Sou
             $state['UserID'] = $client_cert_data['name'];
         }
 
-        SimpleSAML_Logger::debug('X509userCert subject: ' . var_export($client_cert_data['subject'], true));
+        SimpleSAML\Logger::debug('X509userCert subject: ' . var_export($client_cert_data['subject'], true));
         if (array_key_exists($cert_name_attribute, $client_cert_data['subject'])){
             if (is_array($client_cert_data['subject'][$cert_name_attribute])) {
                 $client_cert_data['subject'][$cert_name_attribute] = end($client_cert_data['subject'][$cert_name_attribute]);
@@ -229,7 +231,7 @@ class sspmod_authX509toSAML_Auth_Source_X509userCert extends SimpleSAML_Auth_Sou
      * @param array &$state  Information about the current authentication.
      */
     public function authSuccesful(&$state) {
-        SimpleSAML_Auth_Source::completeAuth($state);
+        SimpleSAML\Auth\Source::completeAuth($state);
 
         assert('FALSE'); /* NOTREACHED */
         return;
