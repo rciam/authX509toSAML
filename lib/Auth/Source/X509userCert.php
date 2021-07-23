@@ -127,7 +127,7 @@ class X509userCert extends Source
         ) {
             $assertion_o_attribute = $this->config['authX509toSAML:assertion_o_attribute'];
         }
-        if (!array_key_exists('authX509toSAML:assetion_assurance_attribute', $this->config)) {
+        if (!array_key_exists('authX509toSAML:assertion_assurance_attribute', $this->config)) {
             $assertion_assurance_attribute = 'eduPersonAssurance';
         } else {
             $assertion_assurance_attribute = $this->config['authX509toSAML:assertion_assurance_attribute'];
