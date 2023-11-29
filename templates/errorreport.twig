@@ -27,7 +27,7 @@
     {% if links is defined %}
         <ul class="links" style="margin-top: 2em">
             {% for ln in links %}
-                <li><a href="{{ ln.href|e('html') }}"><{{ ln.text|e('html') }}/a></li>'
+                <li><a href="{{ ln.href|htmlspecialchars }}"><{{ ln.text|htmlspecialchars }}/a></li>
             {% endfor %}
         </ul>
     {% endif %}
