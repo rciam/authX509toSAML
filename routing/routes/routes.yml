@@ -1,0 +1,8 @@
+---
+
+authX509toSAML-error-report:
+  path: /authX509toSAML/errorReport
+  defaults: {
+    _controller: '\SimpleSAML\Module\authX509toSAML\Controller\ErrorReport::main'
+  }
+  methods: [POST]
