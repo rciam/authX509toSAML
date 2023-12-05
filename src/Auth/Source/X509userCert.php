@@ -277,10 +277,12 @@ class X509userCert extends Source
     private function showError(string $errorCode, array $parameters): void
     {
         // Save state and redirect
-        $url = Module::getModuleURL('/userid/errorReport');
+        // The path matches the name of the route
+        $url = Module::getModuleURL('userid/error');
         $params = [
-            'errorcode' => $errorCode,
-            'parameters' => $parameters
+            'errorCode' => $errorCode,
+            // Serialize the parameters
+            'parameters' => urlencode(base64_encode(json_encode($parameters)))
         ];
 
         $httpUtils = new Utils\HTTP();
