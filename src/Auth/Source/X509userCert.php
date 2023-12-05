@@ -4,9 +4,12 @@ declare(strict_types=1);
 namespace SimpleSAML\Module\authX509toSAML\Auth\Source;
 
 use SimpleSAML\Auth\Source;
-use SimpleSAML\Configuration;
-use SimpleSAML\Logger;
+use SimpleSAML\{Configuration, Logger, Module};
 use SimpleSAML\XHTML\Template;
+use SimpleSAML\Auth\{ProcessingFilter, State};
+use SimpleSAML\Error\Exception;
+use SimpleSAML\Metadata\MetaDataStorageHandler;
+use SimpleSAML\Utils;
 
 /**
  * This class implements x509 certificate authentication in essence
@@ -278,7 +281,7 @@ class X509userCert extends Source
     {
         // Save state and redirect
         // The path matches the name of the route
-        $url = Module::getModuleURL('userid/error');
+        $url = Module::getModuleURL('authX509toSAML/error');
         $params = [
             'errorCode' => $errorCode,
             // Serialize the parameters
