@@ -3,22 +3,21 @@
 declare(strict_types=1);
 
 
-namespace Controller;
+namespace SimpleSAML\Module\authX509toSAML\Controller;
 
 use SAML2\Constants as C;
 use SimpleSAML\Assert\Assert;
-use SimpleSAML\Configuration;
 use SimpleSAML\HTTP\RunnableResponse;
 use SimpleSAML\Locale\Translate;
 use SimpleSAML\Module\adfs\IdP\ADFS as ADFS_IdP;
-use SimpleSAML\Session;
 use SimpleSAML\XHTML\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\VarExporter\VarExporter;
-use SimpleSAML\Utils;
-use TwigFunction;
+use SimpleSAML\{Logger, Configuration, Error, Session, Utils};
+use Twig\TwigFunction;
+
 
 /**
  * Controller class for the admin module.
@@ -58,22 +57,23 @@ class ErrorReport
     $parameters = json_decode(base64_decode(urldecode($parameters)));
 
     // redirect the user back to this page to clear the POST request
-    $t = new Template($this->config, 'userid:errorreport.twig');
+    $t = new Template($this->config, 'authX509toSAML:errorreport.twig');
     $t->data['errorCode'] = $errorCode;
+    $t->data['errorCodes'] = Error\ErrorCodes::getAllErrorCodeMessages();
     foreach ($parameters as $key => $val) {
         $t->data[$key] = $val;
     }
     $t->data['items'] = [
-        'HTTP_HOST' => [$request->getHost()],
+        'HTTP_HOST' => $request->getHost(),
         'HTTPS' => $request->isSecure() ? ['on'] : [],
-        'SERVER_PROTOCOL' => [$request->getProtocolVersion()],
-        'getBaseURL()' => [$this->httpUtils->getBaseURL()],
-        'getSelfHost()' => [$this->httpUtils->getSelfHost()],
-        'getSelfHostWithNonStandardPort()' => [$this->httpUtils->getSelfHostWithNonStandardPort()],
-        'getSelfURLHost()' => [$this->httpUtils->getSelfURLHost()],
-        'getSelfURLNoQuery()' => [$this->httpUtils->getSelfURLNoQuery()],
-        'getSelfHostWithPath()' => [$this->httpUtils->getSelfHostWithPath()],
-        'getSelfURL()' => [$this->httpUtils->getSelfURL()],
+        'SERVER_PROTOCOL' => $request->getProtocolVersion(),
+        'getBaseURL' => $this->httpUtils->getBaseURL(),
+        'getSelfHost' => $this->httpUtils->getSelfHost(),
+        'getSelfHostWithNonStandardPort' => $this->httpUtils->getSelfHostWithNonStandardPort(),
+        'getSelfURLHost' => $this->httpUtils->getSelfURLHost(),
+        'getSelfURLNoQuery' => $this->httpUtils->getSelfURLNoQuery(),
+        'getSelfHostWithPath' => $this->httpUtils->getSelfHostWithPath(),
+        'getSelfURL' => $this->httpUtils->getSelfURL(),
     ];
 
     Logger::debug('[ErrorReport]::main::data' . var_export($t->data, true));

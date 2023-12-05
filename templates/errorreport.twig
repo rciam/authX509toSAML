@@ -2,6 +2,8 @@
 {% set header = 'certificate_header'|trans %}
 {% extends "base.twig" %}
 
+{% set errtitle = errorCodes['title'] %}
+{% set errdescr = errorCodes['descr'] %}
 
 {% block content %}
     {% if errorcode is defined %}
@@ -12,17 +14,17 @@
                  style="margin: 15px"
                  alt=""
             />
-            <h2>{{ 'login:error_header' | trans }}</h2>
-            <p><strong>{% trans %}{{ "errors:title_" ~ errorcode }}{% endtrans %}</strong></p>
-            <p>{% trans %}{{ "errors:descr_" ~ errorcode }}{% endtrans %}</strong></p>
+            <h2>{{ 'Error'|trans }}</h2>
+            <p><strong>{{ errtitle }}</strong></p>
+            <p>{{ errdescr }}</strong></p>
         </div>
     {% endif %}
 
-    <h2 style="break: both">{{ 'certificate_header' | trans }}</h2>
-    <p>{{ 'certificate_text' | trans }}</p>
+    <h2 style="break: both">{{ 'certificate_header'|trans }}</h2>
+    <p>{{ 'certificate_text'|trans }}</p>
 
-    <a href="{{ htmlspecialchars(items.getSelfURL()) }}">
-        {{ 'login:login_button' | trans }}
+    <a href="{{ htmlspecialchars(items.getSelfURL) }}">
+        {{ 'Login'|trans }}
     </a>
 
     {% if links is defined %}
