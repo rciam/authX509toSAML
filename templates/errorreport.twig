@@ -1,0 +1,37 @@
+{% set pagetitle = 'certificate_header'|trans %}
+{% set header = 'certificate_header'|trans %}
+{% extends "base.twig" %}
+
+{% set errtitle = errorCodes['title'] %}
+{% set errdescr = errorCodes['descr'] %}
+
+{% block content %}
+    {% if errorcode is defined %}
+        <div style="border-left: 1px solid #e8e8e8; border-bottom: 1px solid #e8e8e8; background: #f5f5f5">
+{# Any references to `$this->data['baseurlpath']` in old-style templates can be replaced with `{{baseurlpath}}` in Twig templates. Likewise, references to `\SimpleSAML\Module::getModuleURL()` can be replaced with `{{baseurlpath}}module.php/mymodule/...` or the `asset()` function like shown above.#}
+            <img src="{{ baseurlpath }}resources/icons/experience/gtk-dialog-error.48x48.png"
+                 class="float-l"
+                 style="margin: 15px"
+                 alt=""
+            />
+            <h2>{{ 'Error'|trans }}</h2>
+            <p><strong>{{ errtitle }}</strong></p>
+            <p>{{ errdescr }}</strong></p>
+        </div>
+    {% endif %}
+
+    <h2 style="break: both">{{ 'certificate_header'|trans }}</h2>
+    <p>{{ 'certificate_text'|trans }}</p>
+
+    <a href="{{ htmlspecialchars(items.getSelfURL) }}">
+        {{ 'Login'|trans }}
+    </a>
+
+    {% if links is defined %}
+        <ul class="links" style="margin-top: 2em">
+            {% for ln in links %}
+                <li><a href="{{ htmlspecialchars(ln.href) }}"><{{ htmlspecialchars(ln.text) }}/a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

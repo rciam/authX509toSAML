@@ -1,0 +1,5 @@
+msgid  "certificate_header"
+msgstr "X509 certificate authentication"
+
+msgid  "certificate_text"
+msgstr "X509 certificate authentication is required to access this service."

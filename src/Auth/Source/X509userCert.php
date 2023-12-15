@@ -1,11 +1,15 @@
 <?php
+declare(strict_types=1);
 
 namespace SimpleSAML\Module\authX509toSAML\Auth\Source;
 
 use SimpleSAML\Auth\Source;
-use SimpleSAML\Configuration;
-use SimpleSAML\Logger;
+use SimpleSAML\{Configuration, Logger, Module};
 use SimpleSAML\XHTML\Template;
+use SimpleSAML\Auth\{ProcessingFilter, State};
+use SimpleSAML\Error\Exception;
+use SimpleSAML\Metadata\MetaDataStorageHandler;
+use SimpleSAML\Utils;
 
 /**
  * This class implements x509 certificate authentication in essence
@@ -16,7 +20,7 @@ use SimpleSAML\XHTML\Template;
 class X509userCert extends Source
 {
 
-    private $config;
+    private array $config;
 
     /**
      * Constructor for this authentication source.
@@ -27,7 +31,7 @@ class X509userCert extends Source
      * @param array $info  Information about this authentication source.
      * @param array &$config  Configuration for this authentication source.
      */
-    public function __construct($info, &$config)
+    public function __construct(array $info, array &$config)
     {
         assert('is_array($info)');
         assert('is_array($config)');
@@ -43,18 +47,12 @@ class X509userCert extends Source
      *
      * @param array &$state  Information about the current authentication.
      */
-    public function authFailed(&$state)
+    public function authFailed(array &$state): void
     {
-        $config_ssp = Configuration::getInstance();
-
-        $t = new Template(
-            $config_ssp,
-            'authX509toSAML:X509error.php'
-        );
-        $t->data['errorcode'] = $state['authX509toSAML.error'];
-
-        $t->show();
-        exit();
+          $this->showError(
+              $state['authX509toSAML.error'],
+              []
+          );
     }
 
 
@@ -68,8 +66,10 @@ class X509userCert extends Source
      * loaded.
      *
      * @param array &$state  Information about the current authentication.
+     *
+     * @return void
      */
-    public function authenticate(&$state)
+    public function authenticate(array &$state): void
     {
         assert('is_array($state)');
 
@@ -262,11 +262,33 @@ class X509userCert extends Source
      *
      * @param array &$state  Information about the current authentication.
      */
-    public function authSuccesful(&$state)
+    public function authSuccesful(array &$state): void
     {
         Source::completeAuth($state);
 
         assert('FALSE'); /* NOTREACHED */
         return;
+    }
+
+    /**
+     * @param   string  $errorCode
+     * @param   array   $parameters
+     *
+     * @return void
+     * @throws \SimpleSAML\Error\ConfigurationError
+     */
+    private function showError(string $errorCode, array $parameters): void
+    {
+        // Save state and redirect
+        // The path matches the name of the route
+        $url = Module::getModuleURL('authX509toSAML/error');
+        $params = [
+            'errorCode' => $errorCode,
+            // Serialize the parameters
+            'parameters' => urlencode(base64_encode(json_encode($parameters)))
+        ];
+
+        $httpUtils = new Utils\HTTP();
+        $httpUtils->redirectTrustedURL($url, $params);
     }
 }
